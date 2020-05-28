@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	android:background="@drawable/ic_launcherppp"
+	tools:context=".AboutActivity" >
+
+	<TextView
+		android:id="@+id/about"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/abouttext" />
+
+	<LinearLayout
+
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:gravity="bottom"
+		android:orientation="vertical">
+		<!-- android:layout_marginBottom="2dp" -->
+
+		<Button
+			android:id="@+id/sback"
+			android:layout_width="90dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginBottom="16dp"
+			android:text="@string/sback" />
+	</LinearLayout>
+
+</LinearLayout>
