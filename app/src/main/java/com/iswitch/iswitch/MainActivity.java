@@ -164,7 +164,6 @@ public class MainActivity extends Activity implements OnClickListener {
             mDeviceAddress = getIntent().getStringExtra(EXTRAS_DEVICE_ADDRESS);
         }
         longTouchUtil = new LongTouchUtil(this);
-
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
 
         initView();
@@ -336,13 +335,7 @@ public class MainActivity extends Activity implements OnClickListener {
         //++++++++++++++++++
 
         //这里是例子，添加setOnTouchListener这个的时候，上边就不要加setOnClickListener了
-        lihe_jia.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                longTouchUtil.LongTouchSendCmd("0101", event);
-                return true;
-            }
-        });
+        longTouchUtil.setLongClick(lihe_jia,"0101");
     }
 
     @Override
@@ -497,6 +490,8 @@ public class MainActivity extends Activity implements OnClickListener {
     // 发送响应
     // 调用这个方法发送数据到单片机。
     public void sendString(String str) {
+        Log.e("xxx", "当前发送数据：" + str);
+
         if (!mConnected) {
             Toast.makeText(this, "未连接蓝牙", Toast.LENGTH_SHORT).show();
         }
@@ -645,9 +640,7 @@ public class MainActivity extends Activity implements OnClickListener {
     int UN_I = 0;
 
     public void disp2Mobile(byte[] src) {
-        Log.e("xxx", "disp2Mobile执行了");
-        if (src == null) {
-            //disp2Mobile(src);
+        if (src == null || src.length < 14) {
             return;
         }
         // gaodu
@@ -667,7 +660,6 @@ public class MainActivity extends Activity implements OnClickListener {
         int a4 = src[3] & 0xff;
         int a5 = src[4];
         if (a1 == 0xAA && a2 == 0xFB && a3 == 0xFF)
-            Log.e("xxx", "进第一个if语句了");
         {
             if (a5 == 0x1 || a5 == 0x11)//第一段数据
             {

@@ -1,6 +1,7 @@
 package com.iswitch.iswitch.util;
 
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
 
 import com.iswitch.iswitch.MainActivity;
@@ -10,12 +11,25 @@ public class LongTouchUtil {
     private boolean longPress = true;
     private Thread longPressSendCmdThread;
     private MainActivity mActivity;
+    private long sleepTime = 100;//这是100ms，就是0.1s，在这里调整时间
 
     public LongTouchUtil(MainActivity activity) {
         this.mActivity = activity;
     }
 
-    public void LongTouchSendCmd(final String cmd, MotionEvent event) {
+    public void setLongClick(View view, final String str) {
+        if (view != null) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    LongTouchSendCmd(str, motionEvent);
+                    return true;
+                }
+            });
+        }
+    }
+
+    private void LongTouchSendCmd(final String cmd, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 longPress = true;
@@ -29,7 +43,7 @@ public class LongTouchUtil {
                                 {
                                     try {
                                         mActivity.sendString(cmd);
-                                        Thread.sleep(100);//1秒发送一次
+                                        Thread.sleep(sleepTime);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
