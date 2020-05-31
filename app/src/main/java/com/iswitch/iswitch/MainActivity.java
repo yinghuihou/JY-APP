@@ -106,6 +106,9 @@ public class MainActivity extends Activity implements OnClickListener {
     boolean connect_status_bit = false;
     private StringBuffer sbValues = new StringBuffer();
     private LongTouchUtil longTouchUtil;
+    private byte[] jieshouArray;
+
+    private StringBuilder resultBuilder = new StringBuilder();
 
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -335,7 +338,7 @@ public class MainActivity extends Activity implements OnClickListener {
         //++++++++++++++++++
 
         //这里是例子，添加setOnTouchListener这个的时候，上边就不要加setOnClickListener了
-        longTouchUtil.setLongClick(lihe_jia,"0101");
+        longTouchUtil.setLongClick(lihe_jia, "0101");
     }
 
     @Override
@@ -540,19 +543,38 @@ public class MainActivity extends Activity implements OnClickListener {
 
     //接收数据后处理方法
     private void displayData(byte[] data1) {
-        if (data1 != null && data1.length > 0) {
+        if (data1 != null && data1.length > 0 && resultBuilder != null) {
 
-            final StringBuilder stringBuilder = new StringBuilder(sbValues.length());
-            byte[] WriteBytes = mBluetoothLeService.hex2byte(stringBuilder.toString().getBytes());
-
-            for (byte byteChar : data1)
-                stringBuilder.append(String.format(" %02X", byteChar));
-
-            String da = stringBuilder.toString();
+            resultBuilder.delete(0, resultBuilder.length());
+            for (byte byteChar : data1) {
+                resultBuilder.append(String.format(" %02X", byteChar));
+            }
+            String da = resultBuilder.toString();
             sbValues.append(da);
             dis.setText(sbValues.toString());
-            disp2Mobile(data1);
+
+            if (!isSameArray(data1, jieshouArray)) {
+                disp2Mobile(data1);
+            }
         }
+    }
+
+    private boolean isSameArray(byte[] arr1, byte[] arr2) {
+        if (arr2 == null) {
+            return false;
+        }
+
+        if (arr1.length != arr2.length) {
+            return false;
+        }
+
+        for (int i = 0; i < arr1.length; i++) {
+            if (arr1[i] != arr2[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // 关闭程序掉用处理部分
@@ -659,8 +681,7 @@ public class MainActivity extends Activity implements OnClickListener {
         int a3 = src[2] & 0xff;
         int a4 = src[3] & 0xff;
         int a5 = src[4];
-        if (a1 == 0xAA && a2 == 0xFB && a3 == 0xFF)
-        {
+        if (a1 == 0xAA && a2 == 0xFB && a3 == 0xFF) {
             if (a5 == 0x1 || a5 == 0x11)//第一段数据
             {
                 int a6 = src[5] & 0xff;//高度
@@ -691,210 +712,8 @@ public class MainActivity extends Activity implements OnClickListener {
                 if (a13 == 2)
                     stop.setBackgroundResource(R.drawable.qidong);
             }
-
         }
-
-       /* int a15 = src[14];
-        int a16 = src[15];
-        int a17 = src[16];
-        int a18 = src[17];
-        int a19 = src[18];
-        int a20 = src[19];
-        int a21 = src[20];
-        int a22 = src[21];
-        int a23 = src[22];
-        if (a1 < 0) {
-            a1 = a1 + 256;
-        }
-
-        if (a3 < 0) {
-            a3 = a3 + 256;
-        }
-        if (a5 < 0) {
-            a5 = a5 + 256;
-        }
-        if (a6 < 0) {
-            a6 = a6 + 256;
-        }
-        if (a7 < 0) {
-            a7 = a7 + 256;
-        }
-        if (a8 < 0) {
-            a8 = a8 + 256;
-        }
-        if (a9 < 0) {
-            a9 = a9 + 256;
-        }
-        if (a10 < 0) {
-            a10 = a10 + 256;
-        }
-        if (a11 < 0) {
-            a11 = a11 + 256;
-        }
-        if (a12 < 0) {
-            a12 = a12 + 256;
-        }
-        if (a20 < 0) {
-            a20 = a20 + 256;
-        }
-        if (a21 < 0) {
-            a21 = a21 + 256;
-        }
-        if (a22 < 0) {
-            a22 = a22 + 256;
-        }
-        if (a23 < 0) {
-            a23 = a23 + 256;
-        }
-        dadianliu = a5 << 8 | a6;
-        zongqiya = a7 << 8 | a8;
-        sheche = a9 << 8 | a10;
-        lihe = a11 << 8 | a12;
-        sheche = sheche / 100;
-        lihe = lihe / 100;
-        zongqiya = zongqiya / 100;
-        //shache_kong = a20;
-        // lihe_kong = a21;
-        //xieyan = a22;
-        //lihe_ka =a23;
-        if (a16 == 1)
-            imageView21.setText("良好");
-        if (a16 == 2)
-            imageView21.setText("一般");
-        if (a16 == 3)
-            imageView21.setText("较差");
-        if (a16 == 4)
-            imageView21.setText("损坏");
-
-        if (a18 == 1)
-            imageView22.setText("良好");
-        if (a18 == 2)
-            imageView22.setText("一般");
-        if (a18 == 3)
-            imageView22.setText("较差");
-        if (a18 == 4)
-            imageView22.setText("损坏");
-
-        if (a17 == 1)
-            imageView24.setText("良好");
-        if (a17 == 2)
-            imageView24.setText("一般");
-        if (a17 == 3)
-            imageView24.setText("较差");
-        if (a17 == 4)
-            imageView24.setText("损坏");
-
-        if (a19 == 1)
-            imageView25.setText("良好");
-        if (a19 == 2)
-            imageView25.setText("一般");
-        if (a19 == 3)
-            imageView25.setText("较差");
-        if (a19 == 4)
-            imageView25.setText("损坏");
-        height_value.setText((int) a1 + "," + (UN_I++) % 10);
-        rope_value.setText((int) a2 + "  ");
-        speed_value.setText((int) a3 + "  ");
-        tv_A.setText((float) dadianliu + "  ");
-        tv_V.setText((float) zongqiya + "  ");
-        shache_qiya.setText((float) sheche + "  ");
-        lihe_qiya.setText((float) lihe + "  ");
-        textView28.setText((int) a20 + "  ");
-        textView29.setText((int) a21 + "  ");
-        textView30.setText((int) a22 + "  ");
-        textView32.setText((int) a23 + "  ");
-        if (a13 == 0)
-            start.setBackgroundResource(R.drawable.dianjiqidong);
-        if (a13 == 1)
-            start.setBackgroundResource(R.drawable.dianjiting);
-        if (a14 == 1)
-            stop.setBackgroundResource(R.drawable.qidonghongse);
-        if (a14 == 2)
-            stop.setBackgroundResource(R.drawable.qidong);
-        if (a15 == 1)
-            danshuang.setBackgroundResource(R.drawable.shuangda);
-        if (a15 == 2)
-            danshuang.setBackgroundResource(R.drawable.danda);
-        //
-        //*/
-
-
     }
-
-    // public  byte  pinjie(byte gao,byte di,int he){
-    //     he = gao<<8 | di;
-    //return he;
-    //  }
-    public byte[] fromAll(byte[] src, int end) {
-        byte[] buffer = new byte[end];
-        for (int i = 0; i < end; i++) {
-            buffer[i] = src[i];
-        }
-        return buffer;
-    }
-
-    public byte[] from(byte[] src, int end) {
-        byte[] head = new byte[2];
-        head[0] = 0x1d;
-        head[1] = 0x2d;
-
-        //start
-        int index1 = -1;
-        int index2 = -1;
-        for (int i = 0; i < end; i++) {
-            if (src[i] == head[0]) {
-                index1 = i;
-            }
-            if (index1 != -1 && src[i] == head[1] && i == index1 + 1) {
-                index2 = i;
-                break;
-            }
-        }
-        //
-        if (!(index1 != -1 && index2 != -1)) {
-            return null;
-        }
-
-        //
-        //end
-        byte[] tail = new byte[2];
-        tail[0] = 0x2e;
-        tail[1] = 0x3e;
-        int t1 = -1;
-        int t2 = -1;
-        for (int i = index2 + 1; i < end; i++) {
-            if (src[i] == tail[0]) {
-                t1 = i;
-            }
-            if (t1 != -1 && src[i] == tail[1] && i == t1 + 1) {
-                t2 = i;
-                break;
-            }
-        }
-        //
-        if (!(t1 != -1 && t2 != -1)) {
-            return null;
-        }
-
-        //read data
-        byte[] data = copyBuffer(src, index2, t1);
-
-        //validatte
-
-        //
-        return data;
-    }
-
-
-    public byte[] copyBuffer(byte[] src, int start, int end) {
-        byte[] buffer = new byte[end - start - 1];
-        int j = 0;
-        for (int i = start + 1; i < end; i++) {
-            buffer[j++] = src[i];
-        }
-        return buffer;
-    }
-
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
